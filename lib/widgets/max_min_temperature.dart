@@ -9,11 +9,11 @@ class MaxAndMinTemperatureWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Max : ' + 24.toString() + '°C',
+          'Maximum : ' + 24.toString() + '°C',
           style: TextStyle(fontSize: 20),
         ),
         Text(
-          'Min : ' + 12.toString() + '°C',
+          'Minimum : ' + 12.toString() + '°C',
           style: TextStyle(fontSize: 20),
         ),
       ],
