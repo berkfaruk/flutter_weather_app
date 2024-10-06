@@ -9,7 +9,7 @@ sealed class WeatherEvent extends Equatable {
 
 class FetchWeatherEvent extends WeatherEvent {
   final String cityName;
-  FetchWeatherEvent({required this.cityName});
+  const FetchWeatherEvent({required this.cityName});
 
   @override
   List<Object> get props => [cityName];
