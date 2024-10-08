@@ -1,8 +1,11 @@
 // ignore_for_file: must_be_immutable
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_weather_app/blocs/weather/weather_bloc.dart';
+import 'package:flutter_weather_app/data/weather_condition.dart';
 import 'package:flutter_weather_app/widgets/choose_city.dart';
 import 'last_update.dart';
 import 'location.dart';
@@ -13,6 +16,7 @@ class WeatherApp extends StatelessWidget {
   WeatherApp({super.key});
 
   String userChoosenCity = 'Ankara';
+  Completer _refreshCompleter = Completer();
 
   @override
   Widget build(BuildContext context) {
@@ -50,42 +54,39 @@ class WeatherApp extends StatelessWidget {
 
               final fetchWeather = state.weather;
               final fetchLocation = state.location;
-              
-              print(fetchWeather.currentWeather?.temperature);
-              print(fetchWeather.elevation);
-              print(fetchWeather.currentWeather?.weathercode);
-              print(fetchWeather.daily!.temperature2mMin);
-              print(fetchWeather.daily!.temperature2mMin![0]);
-              print(fetchWeather.daily!.temperature2mMax);
-              print(fetchLocation.name);
-              
 
-              return ListView(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(
-                        child: LocationWidget(
-                      choosenCity: userChoosenCity,
-                    )),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(child: LastUpdateWidget()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Center(child: WeatherPictureWidget()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Center(child: MaxAndMinTemperatureWidget()),
-                  ),
-                ],
+              return RefreshIndicator(
+                onRefresh: () {
+                  _weatherBloc.add(RefreshWeatherEvent(cityName: userChoosenCity));
+                  return _refreshCompleter.future;
+                },
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(
+                          child: LocationWidget(
+                        choosenCity: fetchLocation.name!,
+                      )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: LastUpdateWidget()),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Center(child: WeatherPictureWidget(condition: fetchWeather.currentWeather!.weathercode!.toCondition)),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Center(child: MaxAndMinTemperatureWidget()),
+                    ),
+                  ],
+                ),
               );
             }
             if (state is WeatherErrorState) {
-              return Center(child: Text('Error'));
+              return Center(child: Text('Something Went Wrong'));
             } else return Center();
           },
         ),

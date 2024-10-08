@@ -23,7 +23,16 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
           emit(WeatherLoadedState(weather: fetchWeather, location: fetchLocation));
         } catch (e) {
           emit(WeatherErrorState());
-          print(e.toString());
+        }
+      } 
+      else if(event is RefreshWeatherEvent){
+        emit(WeatherLoadingState());
+        try {
+          final Weather fetchWeather = await weatherRepository.getWeather(event.cityName);
+          final Result fetchLocation = await weatherRepository.getLocation(event.cityName);
+          emit(WeatherLoadedState(weather: fetchWeather, location: fetchLocation));
+        } catch (e) {
+          emit(WeatherErrorState());
         }
       } 
     });

@@ -4,13 +4,11 @@ class LocationWidget extends StatelessWidget {
   final String choosenCity;
   const LocationWidget({super.key, required this.choosenCity});
 
-  
-
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Ankara',
-      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+    return Text(
+      choosenCity,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
     );
   }
 }
