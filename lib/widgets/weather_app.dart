@@ -4,9 +4,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_weather_app/blocs/theme/theme_bloc.dart';
 import 'package:flutter_weather_app/blocs/weather/weather_bloc.dart';
 import 'package:flutter_weather_app/data/weather_condition.dart';
 import 'package:flutter_weather_app/widgets/choose_city.dart';
+import 'package:flutter_weather_app/widgets/gradient_background_color.dart';
 import 'last_update.dart';
 import 'location.dart';
 import 'max_min_temperature.dart';
@@ -25,6 +27,7 @@ class WeatherApp extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Weather App'),
+        backgroundColor: Theme.of(context).primaryColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -54,34 +57,42 @@ class WeatherApp extends StatelessWidget {
 
               final fetchWeather = state.weather;
               final fetchLocation = state.location;
+              BlocProvider.of<ThemeBloc>(context).add(ChangeThemeEvent(fetchWeather.currentWeather!.weathercode!));
+              userChoosenCity = fetchLocation.name!;
 
-              return RefreshIndicator(
-                onRefresh: () {
-                  _weatherBloc.add(RefreshWeatherEvent(cityName: userChoosenCity));
-                  return _refreshCompleter.future;
-                },
-                child: ListView(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                          child: LocationWidget(
-                        choosenCity: fetchLocation.name!,
-                      )),
+              return BlocBuilder(
+                bloc: BlocProvider.of<ThemeBloc>(context),
+                builder: (context, state) => GradientBackgroundColor(
+                  color: (state as AppThemeState).color,
+                  child: RefreshIndicator(
+                    onRefresh: () {
+                      _weatherBloc.add(RefreshWeatherEvent(cityName: userChoosenCity));
+                      return _refreshCompleter.future;
+                    },
+                    child: ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(
+                              child: LocationWidget(
+                            choosenCity: fetchLocation.name!,
+                          )),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(child: LastUpdateWidget()),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Center(child: WeatherPictureWidget(condition: fetchWeather.currentWeather!.weathercode!.toCondition)),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Center(child: MaxAndMinTemperatureWidget()),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(child: LastUpdateWidget()),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(child: WeatherPictureWidget(condition: fetchWeather.currentWeather!.weathercode!.toCondition)),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Center(child: MaxAndMinTemperatureWidget()),
-                    ),
-                  ],
+                  ),
                 ),
               );
             }

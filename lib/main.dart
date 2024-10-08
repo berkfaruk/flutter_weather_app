@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_weather_app/blocs/theme/theme_bloc.dart';
 import 'package:flutter_weather_app/blocs/weather/weather_bloc.dart';
 import 'package:flutter_weather_app/locator.dart';
 import 'widgets/weather_app.dart';
 
 void main() {
   setupLocator();
-  runApp(const MyApp());
+  runApp(BlocProvider(
+    create: (context) => ThemeBloc(),
+    child: const MyApp(),
+    ));
 }
 
 class MyApp extends StatelessWidget {
@@ -14,14 +18,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Weather App',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return BlocBuilder(
+      bloc: BlocProvider.of<ThemeBloc>(context),
+      builder: (context, state) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Weather App',
+        theme: (state as AppThemeState).theme,
+        home: BlocProvider(create: (context) => WeatherBloc(),child: WeatherApp()),
       ),
-      home: BlocProvider(create: (context) => WeatherBloc(),child: WeatherApp()),
     );
   }
 }

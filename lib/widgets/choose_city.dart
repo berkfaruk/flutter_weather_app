@@ -12,32 +12,38 @@ class _ChooseCityWidgetState extends State<ChooseCityWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Choose City'),
-      ),
-      body: Form(
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextFormField(
-                controller: _textController,
-                decoration: const InputDecoration(
-                  labelText: 'City',
-                  hintText: 'Choose City',
-                  border: OutlineInputBorder(),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Choose City'),
+        ),
+        body: Form(
+            child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  autofocus: true,
+                  controller: _textController,
+                  decoration: const InputDecoration(
+                    labelText: 'City',
+                    hintText: 'Choose City',
+                    border: OutlineInputBorder(),
+                  ),
                 ),
               ),
             ),
-          ),
-          IconButton(onPressed: () {
-            Navigator.pop(context, _textController.text);
-          }, icon: const Icon(Icons.search))
-        ],
-      )),
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context, _textController.text);
+                },
+                icon: const Icon(Icons.search))
+          ],
+        )),
+      ),
     );
   }
 }
